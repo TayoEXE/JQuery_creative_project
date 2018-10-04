@@ -1,0 +1,76 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<title>Pokemon</title>
+<script
+  src="http://code.jquery.com/jquery-3.2.1.min.js">
+</script>
+<script>
+$(document).ready(function() {
+  var myurl = "https://pokeapi.co/api/v2/pokemon/";
+  var listPokemon = getListOfPokemon(myurl);
+  console.log(listPokemon);
+  
+  $("#searchButton").click(function(e){
+    var value = $("#pokeField").val();
+    value = value.toLowerCase();
+    console.log(value);
+    e.preventDefault();
+    $("#displayPokemon").text(value);
+    var myurl= "https://pokeapi.co/api/v2/pokemon/";
+    myurl += value + "/";
+    console.log(myurl);
+    $.ajax({
+      url : myurl,
+      dataType : "json",
+      success : function(parsed_json) {
+            var name = parsed_json['name'];
+            var sprite = parsed_json['sprites']['front_default'];
+            var everything = "<img height=\"200\" weight=\"200\" src=\"" + sprite + "\"/>";
+            everything += "<ul class=\"list-group\">";
+            everything += "<li class=\"list-group-item\">Name: " + uppercase(name);
+            everything += "</ul>";
+            $("#search").html(everything);
+      }
+    });
+  });
+  
+  function uppercase(lower) {
+      return lower.charAt(0).toUpperCase() + lower.substr(1);
+  }
+  
+  function getListOfPokemon(urlBase) {
+      var listNames = [];
+      $.ajax({
+      url : urlBase,
+      dataType : "json",
+      success : function(parsed_json) {
+            console.log(parsed_json)
+            var numPokemon = parsed_json['count'];
+            
+            for (var i = 0; i < numPokemon; i++) {
+                listNames.push(parsed_json['results'][i]['name']);
+            }
+      }
+      
+    });
+    return listNames;
+  }
+});
+</script>
+</head>
+<body>
+  <input id="searchButton" type="submit" value="Submit">
+  
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Pokemon</span>
+    </div>
+    <textarea id="pokeField" class="form-control" placeholder="Put name here" aria-label="With textarea"></textarea>
+  </div>
+
+  <p><b>Current Pokemon</b></p>
+  <div id="search">No Pokemon</div>
+  
+</body>
+</html>
